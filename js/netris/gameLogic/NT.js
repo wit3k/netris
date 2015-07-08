@@ -1,12 +1,14 @@
 var NT = {
-	NTMinos: {
-		I: {
+	NTMinos: [
+		{
+			name: "I",
 			variants: [
 				[2,1,1,1],
 				[[2],[1],[1],[1]]
 			]
 		},
-		T: {
+		{
+			name: "T",
 			variants: [
 				[[1,2,1],[0,1,0]],
 				[[1,0],[2,1],[1,0]],
@@ -14,12 +16,14 @@ var NT = {
 				[[0,1],[1,2],[0,1]]
 			]
 		},
-		O: {
+		{
+			name: "O",
 			variants: [
 				[[1,1],[1,1]]
 			]
 		},
-		L: {
+		{
+			name: "L",
 			variants: [
 				[[1,0],[1,0],[1,1]],
 				[[0,0,1],[1,1,1]],
@@ -27,7 +31,8 @@ var NT = {
 				[[1,1,1],[1,0,0]]
 			]
 		},
-		J: {
+		{
+			name: "J",
 			variants: [
 				[[0,1],[0,1],[1,1]],
 				[[1,1,1],[0,0,1]],
@@ -35,19 +40,21 @@ var NT = {
 				[[1,0,0],[1,1,1]]
 			]
 		},
-		S: {
+		{
+			name: "S",
 			variants: [
 				[[0,1,1],[1,1,0]],
 				[[1,0],[1,1],[0,1]],
 			]
 		},
-		Z: {
+		{
+			name: "Z",
 			variants: [
 				[[1,1,0],[0,1,1]],
 				[[0,1],[1,1],[1,0]]
 			]
 		}
-	},
+	],
 	NTCell: function () {
 		this.isFilled = false;
 		this.color = null;
@@ -74,40 +81,56 @@ var NT = {
 
 		this.currentNetrimino = null;
 		this.currentRow = 0;
+		this.currentCollumn = 4;
 		this.currentColor = "#900090";
 		this.timeStarted = new Date().getTime();
+		this.timeLastCheck = new Date().getTime();
 
 		this.board = new NT.NTBoard();
 
-		var checkSpace = function () {
-
+		this.checkSpace = function () {
+			return true;
+		}
+		this.slideDown = function (forceFaster) {
+			var thisMoment = new Date().getTime();
+			if(forceFaster) {
+				//@TODO - jump to the nearest floor
+			} else {
+				// if(thisMoment - this.timeStarted) {
+					//@TODO - normal time dependent slide
+				// }
+			}
+		}
+		this.stickCurrent = function () {
 
 		}
-		var slideDown = function () {
+		this.ntLottery = function () {
+			function getRandomInt(min, max) {
+				return Math.floor(Math.random() * (max - min + 1)) + min;
+			}
+			this.currentNetrimino = NT.NTMinos[getRandomInt(0, NT.NTMinos.length - 1)];
+			this.currentRow = 0;
+			this.currentCollumn = 4;
+		}
+		this.unwantedCharge = function () {
 
 		}
-		var ntLottery = function () {
-
-		}
-		var unwantedCharge = function () {
-
-		}
-		var clearFull = function (emptyCollumn) {
+		this.clearFull = function (emptyCollumn) {
 
 		}
 
 		this.gameLoop = function () {
-			console.log("Game loop");
 			if(this.currentNetrimino === null) {
-				ntLottery();
+				this.ntLottery();
 			}
-			if(checkSpace()) {
-				slideDown();
+			if(this.checkSpace()) {
+				this.slideDown();
 			} else {
-				clearFull();
-				ntLottery();
+				this.stickCurrent();
+				this.clearFull();
+				this.ntLottery();
 			}
-			unwantedCharge(5);
+			// this.unwantedCharge(5);
 		}
 	}
 };
