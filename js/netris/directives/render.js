@@ -8,35 +8,7 @@ angular.module("netrisRender", [])
 					playerId: "=playerId"
 				},
 				link: function (scope, elem, attr) {
-					var Tetrimino = function () {
-						this.filled = false;
-						this.color = null;
-						this.multiplier = 1;
-					};
-					var TetriminoBoard = function () {
-						this.defaultWidth = 10;
-						this.defaultHeight = 20;
-						this.state = null;
-						this.state = [];
-						for(i = 0; i < 20 ; i++) {	//ROWS
-							var row = [];
-							for(j = 0; j < 10 ; j++) {	//COLLUMNS
-								row.push(new Tetrimino);
-							}
-							this.state.push(row);
-						}
-					}
-					
-
-					var gameState = {
-						playerId: null,
-						points: 0,
-						currentTetrimino: null,
-						board: new TetriminoBoard
-					};
-
-					console.log(gameState);
-
+					var tmpState = new NT.NTGameState();
 
 					var scene = new THREE.Scene();
 					var camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
@@ -59,6 +31,7 @@ angular.module("netrisRender", [])
 					camera.position.z = 5;
 
 					var render = function () {
+						tmpState.gameLoop();
 						requestAnimationFrame( render );
 
 						for (i in cubes) {
