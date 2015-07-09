@@ -10,6 +10,8 @@ angular.module("netrisRender", [])
 				link: function (scope, elem, attr) {
 					var tmpState = new NT.NTGameState();
 
+					var keyboard = new THREEx.KeyboardState();
+
 					var scene = new THREE.Scene();
 					var camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
 
@@ -31,7 +33,23 @@ angular.module("netrisRender", [])
 					camera.position.z = 5;
 
 					var render = function () {
-						tmpState.gameLoop();
+
+
+						if (keyboard.pressed("left") || keyboard.pressed("j")) {
+							tmpState.jumpLeft();
+						}
+						if (keyboard.pressed("right") || keyboard.pressed("l")) {
+							tmpState.jumpRight();
+						}
+						if (keyboard.pressed("down") || keyboard.pressed("k")) {
+							tmpState.jumpDown();
+						}
+						if (keyboard.pressed("up") || keyboard.pressed("space") || keyboard.pressed("i")) {
+							tmpState.toggleNTVariant();
+						}
+						tmpState.gameLoop(false);
+
+
 						requestAnimationFrame( render );
 
 						for (i in cubes) {

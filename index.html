@@ -7,15 +7,16 @@
 			* { margin: 0; padding: 0; }
 			canvas, .container { width: 0; height: 0; display: block; }
 		</style>
-		
+
 	</head>
 	<body ng-app="netrisApp">
 		<div class="container" ng-view=""></div>
 
 		<script src="/js/netris/lib/three_r71.js"></script>
+		<script src="/js/netris/lib/THREEx.KeyboardState.js"></script>
 		<script src="/js/netris/lib/angular_1.3.16.js"></script>
 		<script src="/js/netris/lib/angular-route_1.3.16.js"></script>
-		
+
 		<script src="/js/netris/gameLogic/NT.js"></script>
 		<script src="/js/netris/app.js"></script>
 		<script src="/js/netris/controllers/main.js"></script>

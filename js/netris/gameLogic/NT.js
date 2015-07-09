@@ -1,3 +1,8 @@
+var NTTools = {
+	getRandomInt: function(min, max) {
+		return Math.floor(Math.random() * (max - min + 1)) + min;
+	}
+}
 var NTConfig = {
 	boardWidth: 10,
 	boardHeight: 20
@@ -79,7 +84,7 @@ var NT = {
 	NTGameState: function () {
 		this.playerId = null;
 		this.points = 0;
-		this.timeMultiplier = 31.0;
+		this.timeMultiplier = 1.0;
 		this.gameOver = false;
 
 		this.currentNetrimino = null;
@@ -89,8 +94,59 @@ var NT = {
 		this.currentColor = "#900090";
 		this.timeStarted = new Date().getTime();
 		this.timeLastJump = new Date().getTime();
+		this.timeKeyboardAction = new Date().getTime();
 
 		this.board = new NT.NTBoard();
+
+		this.canKeyAct = function () {
+			var timeDiff = new Date().getTime() - this.timeKeyboardAction;
+			this.timeKeyboardAction = new Date().getTime();
+			return (timeDiff > 50);
+		}
+		this.toggleNTVariant = function () {
+			if (this.canKeyAct()) {
+				this.currentNetriminoVariantIndex =
+					(this.currentNetrimino.variants.length - 1 == this.currentNetriminoVariantIndex )
+					? 0
+					: this.currentNetriminoVariantIndex + 1;
+					this.placeCurrentOnBoard();
+			}
+		}
+		this.jumpLeft = function () {
+			if (this.canKeyAct()) {
+				for (var i = 0; i < NTConfig.boardHeight; i ++) {
+					for (var j = 0; j < NTConfig.boardWidth; j++) {
+						if (this.board.state[i][j].isTemporary && this.board.state[i][j].isFilled) {
+								if (this.board.state[i][(j * 1) - 1] == undefined || this.board.state[i][(j * 1) - 1].isFilled && !this.board.state[i][(j * 1) - 1].isTemporary) {
+									return false;
+								}
+						}
+					}
+				}
+				this.currentCollumn--;
+				this.placeCurrentOnBoard();
+				return true;
+			}
+		}
+		this.jumpRight = function () {
+			if (this.canKeyAct()) {
+				for (var i = 0; i < NTConfig.boardHeight; i ++) {
+					for (var j = 0; j < NTConfig.boardWidth; j++) {
+						if (this.board.state[i][j].isTemporary && this.board.state[i][j].isFilled) {
+								if (this.board.state[i][(j * 1) + 1] == undefined || this.board.state[i][(j * 1) + 1].isFilled && !this.board.state[i][(j * 1) + 1].isTemporary) {
+									return false;
+								}
+						}
+					}
+				}
+				this.currentCollumn++;
+				this.placeCurrentOnBoard();
+				return true;
+			}
+		}
+		this.jumpDown = function () {
+				this.gameLoop(true);
+		}
 
 		this.setGameOver = function (state) {
 			this.gameOver = state;
@@ -164,11 +220,8 @@ var NT = {
 			}
 		}
 		this.ntLottery = function () {
-			function getRandomInt(min, max) {
-				return Math.floor(Math.random() * (max - min + 1)) + min;
-			}
-			this.currentNetrimino = NT.NTMinos[getRandomInt(0, NT.NTMinos.length - 1)];
-			this.currentNetriminoVariantIndex = getRandomInt(0, this.currentNetrimino.variants.length - 1);
+			this.currentNetrimino = NT.NTMinos[NTTools.getRandomInt(0, NT.NTMinos.length - 1)];
+			this.currentNetriminoVariantIndex = NTTools.getRandomInt(0, this.currentNetrimino.variants.length - 1);
 			this.currentRow = 0;
 			this.currentCollumn = Math.floor(NTConfig.boardWidth / 2);
 			this.placeCurrentOnBoard();
@@ -183,7 +236,6 @@ var NT = {
 			var lineClear = true;
 			var points = 0;
 			for (var i = 0; i < NTConfig.boardHeight; i++) {
-				this.debugBoard();
 				lineClear = true;
 				points = 0;
 				for (var j = 0; j < NTConfig.boardWidth; j++) {
@@ -205,6 +257,7 @@ var NT = {
 			}
 		}
 		this.NTLogic = function () {
+			console.log(this.debugBoard());
 			if (this.checkEmptySpace()) {
 				this.slideDown();
 			} else {
@@ -221,7 +274,7 @@ var NT = {
 					this.ntLottery();
 				}
 				if (forceFaster) {
-					this.logicLoop();
+					this.NTLogic();
 				} else {
 					if ((thisMoment - this.timeLastJump) > 1000 / this.timeMultiplier) {
 						this.timeLastJump = new Date().getTime();
